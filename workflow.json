@@ -1,0 +1,618 @@
+{
+  "name": "Manual Mantenimiento Bot",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "webhook-telegram",
+        "options": {}
+      },
+      "id": "webhook-telegram",
+      "name": "Telegram Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [240, 300],
+      "webhookId": "webhook-telegram"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "start-command",
+              "leftValue": "={{ $json.message?.text }}",
+              "rightValue": "/start",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "help-command", 
+              "leftValue": "={{ $json.message?.text }}",
+              "rightValue": "/help",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "sections-command",
+              "leftValue": "={{ $json.message?.text }}",
+              "rightValue": "/sections",
+              "operator": {
+                "type": "string",
+                "operation": "equals", 
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "id": "command-detector",
+      "name": "Detectar Comandos",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Procesar comando /start\nconst chatId = $input.first().json.message.chat.id;\nconst userName = $input.first().json.message.from.first_name || 'Usuario';\n\nconst startMessage = `🔧 *Manual de Mantenimiento Bot*\n\n¡Hola ${userName}! 👋\n\nSoy tu asistente especializado en el Manual de Mantenimiento de Salones del Reino.\n\n*¿Qué puedo hacer por ti?*\n\n🔍 *Consultas especializadas:*\n• Equipamiento y herramientas\n• Sistemas eléctricos y electrónicos  \n• Sistemas mecánicos (climatización, agua)\n• Reparaciones rápidas\n• Seguridad y EPP\n• Inspecciones y mantenimiento preventivo\n\n*📝 Ejemplos de consultas:*\n• \"¿Qué EPP usar para mantenimiento?\"\n• \"¿Cómo revisar extintores?\"\n• \"¿Por qué gotea el aire acondicionado?\"\n• \"Mantenimiento de equipos de audio\"\n\n*🎯 Comandos disponibles:*\n/help - Ver esta ayuda\n/sections - Ver secciones del manual\n\n💡 *Simplemente escribe tu consulta y te ayudo con información específica del manual oficial.*`;\n\nreturn {\n  chat_id: chatId,\n  text: startMessage,\n  parse_mode: 'Markdown'\n};"
+      },
+      "id": "start-handler",
+      "name": "Comando Start",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [680, 180]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Procesar comando /help\nconst chatId = $input.first().json.message.chat.id;\n\nconst helpMessage = `📚 *Manual de Mantenimiento - Ayuda*\n\n*🎯 ¿Cómo usar el bot?*\nSimplemente escribe tu consulta sobre mantenimiento y recibirás:\n• Información específica del manual oficial\n• Imágenes relevantes cuando estén disponibles\n• Referencias a páginas del manual\n• Procedimientos paso a paso\n\n*🔧 Áreas de especialización:*\n\n*1. Introducción y Seguridad*\n• EPP (Equipo de Protección Personal)\n• Normas de seguridad\n• Programa de mantenimiento\n\n*2. Equipos*\n• Aspiradoras y herramientas de limpieza\n• Escaleras portátiles\n• Herramientas eléctricas\n\n*3. Edificios*\n• Inspecciones de emergencia\n• Techos y estructura\n• Puertas y ventanas\n\n*4. Sistemas Eléctricos*\n• Distribución eléctrica\n• Luminarias\n• Tableros eléctricos\n\n*5. Sistemas Electrónicos*\n• Equipos de audio y video\n• Sistemas de seguridad\n\n*6. Sistemas Mecánicos*\n• Climatización (aire acondicionado)\n• Sistemas de agua\n• Dispensadores\n\n*7. Reparaciones Rápidas*\n• Procedimientos de emergencia\n• Soluciones inmediatas\n\n*💡 Ejemplos de consultas:*\n\\\"¿Cómo quitar óxido de elementos metálicos?\\\"  \n\\\"Mantenimiento preventivo de aire acondicionado\\\"  \n\\\"¿Qué revisar en una inspección de emergencia?\\\"  \n\\\"Procedimiento para limpiar filtros de aspiradora\\\"\n\n*⚡ Comandos:*\n/start - Mensaje de bienvenida\n/sections - Ver todas las secciones disponibles\n\n¿En qué puedo ayudarte hoy? 🛠️`;\n\nreturn {\n  chat_id: chatId,\n  text: helpMessage,\n  parse_mode: 'Markdown'\n};"
+      },
+      "id": "help-handler",
+      "name": "Comando Help",
+      "type": "n8n-nodes-base.code", 
+      "typeVersion": 2,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Procesar comando /sections\nconst chatId = $input.first().json.message.chat.id;\n\nconst sectionsMessage = `📋 *Secciones del Manual de Mantenimiento*\n\n*🔧 Contenido disponible en el sistema:*\n\n*1️⃣ Introducción y Seguridad*\n• Programa de mantenimiento preventivo\n• Equipo de Protección Personal (EPP)\n• Normas de seguridad DC-82\n• Formularios y procedimientos\n\n*2️⃣ Equipos*\n• Aspiradoras y equipos de limpieza\n• Escaleras portátiles\n• Herramientas eléctricas\n• Mantenimiento de filtros\n\n*3️⃣ Edificios*\n• Inspecciones de emergencia\n• Mantenimiento de techos\n• Puertas y ventanas\n• Estructura general\n\n*4️⃣ Sistemas Eléctricos*\n• Distribución eléctrica\n• Luminarias y alumbrado\n• Tableros eléctricos\n• Seguridad eléctrica\n\n*5️⃣ Sistemas Electrónicos*\n• Equipos de audio y sonido\n• Sistemas de video\n• Equipos de seguridad\n• Mantenimiento preventivo\n\n*6️⃣ Sistemas Mecánicos*\n• Aire acondicionado y climatización\n• Sistemas de agua potable\n• Dispensadores de agua\n• Ventilación\n\n*7️⃣ Reparaciones Rápidas*\n• Procedimientos de emergencia\n• Soluciones inmediatas\n• Reparaciones temporales\n• Mantenimiento correctivo\n\n*🎯 ¿Cómo consultar?*\nEscribe tu pregunta sobre cualquiera de estas áreas, por ejemplo:\n• \\\"¿Cómo mantener el aire acondicionado?\\\"  \n• \\\"Procedimiento de seguridad con equipos\\\"  \n• \\\"¿Qué revisar en una inspección?\\\"\n\n¡El sistema buscará automáticamente en la sección más relevante! 🚀`;\n\nreturn {\n  chat_id: chatId,\n  text: sectionsMessage,\n  parse_mode: 'Markdown'\n};"
+      },
+      "id": "sections-handler",
+      "name": "Comando Sections",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [680, 420]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Procesar consulta general al manual\nconst message = $input.first().json.message;\nconst chatId = message.chat.id;\nconst userQuery = message.text;\nconst userId = message.from.id;\nconst userName = message.from.first_name || 'Usuario';\n\n// Detectar automáticamente la sección más relevante\nfunction detectSection(query) {\n  const q = query.toLowerCase();\n  \n  // Palabras clave por sección\n  const sectionKeywords = {\n    'introduccion': ['epp', 'seguridad', 'protección personal', 'normas', 'programa', 'dc-82', 'formulario'],\n    'equipos': ['aspiradora', 'escalera', 'herramienta', 'filtro', 'limpieza', 'portátil', 'eléctrica'],\n    'edificios': ['emergencia', 'inspección', 'techo', 'puerta', 'ventana', 'estructura', 'edificio'],\n    'electricos': ['eléctrico', 'luminaria', 'tablero', 'distribución', 'alumbrado', 'electricidad'],\n    'electronicos': ['audio', 'video', 'sonido', 'electrónico', 'seguridad', 'sistema'],\n    'mecanicos': ['aire acondicionado', 'climatización', 'agua', 'dispensador', 'ventilación', 'mecánico', 'gotea'],\n    'reparaciones': ['reparación', 'rápida', 'emergencia', 'correctivo', 'óxido', 'temporal']\n  };\n  \n  let maxMatches = 0;\n  let detectedSection = 'general';\n  \n  Object.entries(sectionKeywords).forEach(([section, keywords]) => {\n    const matches = keywords.filter(keyword => q.includes(keyword)).length;\n    if (matches > maxMatches) {\n      maxMatches = matches;\n      detectedSection = section;\n    }\n  });\n  \n  return detectedSection;\n}\n\nconst detectedSection = detectSection(userQuery);\n\nreturn {\n  chat_id: chatId,\n  user_id: userId,\n  user_name: userName,\n  query: userQuery,\n  detected_section: detectedSection,\n  timestamp: new Date().toISOString()\n};"
+      },
+      "id": "query-processor",
+      "name": "Procesar Consulta",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [680, 560]
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.RAG_API_URL }}/query",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "httpBasicAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "query",
+              "value": "={{ $json.query }}"
+            },
+            {
+              "name": "user_id",
+              "value": "={{ $json.user_id }}"
+            },
+            {
+              "name": "section_filter",
+              "value": "={{ $json.detected_section }}"
+            },
+            {
+              "name": "max_results",
+              "value": "5"
+            },
+            {
+              "name": "include_images",
+              "value": "true"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 30000,
+          "retry": {
+            "enabled": true,
+            "maxTries": 3
+          }
+        }
+      },
+      "id": "rag-api-call",
+      "name": "Llamada API RAG",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [900, 560],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "api-success",
+              "leftValue": "={{ $json.response?.answer }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "api-response-check",
+      "name": "Verificar Respuesta API",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [1120, 560]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Formatear respuesta exitosa del RAG\nconst input = $input.first().json;\nconst apiResponse = input.response;\nconst queryData = $('Procesar Consulta').first().json;\n\nconst chatId = queryData.chat_id;\nconst userQuery = queryData.query;\nconst userName = queryData.user_name;\nconst detectedSection = queryData.detected_section;\n\n// Mapear nombres de secciones a emojis\nconst sectionEmojis = {\n  'introduccion': '🦺',\n  'equipos': '🔧', \n  'edificios': '🏢',\n  'electricos': '⚡',\n  'electronicos': '📺',\n  'mecanicos': '❄️',\n  'reparaciones': '🔨',\n  'general': '📖'\n};\n\nconst sectionNames = {\n  'introduccion': 'Seguridad y EPP',\n  'equipos': 'Equipos',\n  'edificios': 'Edificios', \n  'electricos': 'Sistemas Eléctricos',\n  'electronicos': 'Sistemas Electrónicos',\n  'mecanicos': 'Sistemas Mecánicos',\n  'reparaciones': 'Reparaciones Rápidas',\n  'general': 'Manual General'\n};\n\nconst emoji = sectionEmojis[detectedSection] || '📖';\nconst sectionName = sectionNames[detectedSection] || 'Manual General';\n\n// Construir mensaje principal\nlet message = `${emoji} *${sectionName.toUpperCase()}*\\n\\n`;\nmessage += `*Consulta:* ${userQuery}\\n\\n`;\nmessage += `${apiResponse.answer}\\n\\n`;\n\n// Agregar información de fuentes si está disponible\nif (apiResponse.sources && apiResponse.sources.length > 0) {\n  message += `📚 *Referencias:*\\n`;\n  apiResponse.sources.forEach((source, index) => {\n    if (source.page) {\n      message += `• Página ${source.page}`;\n      if (source.section) {\n        message += ` - ${source.section}`;\n      }\n      message += `\\n`;\n    }\n  });\n  message += `\\n`;\n}\n\n// Agregar tiempo de procesamiento\nif (apiResponse.processing_time) {\n  message += `⏱️ *Tiempo:* ${apiResponse.processing_time.toFixed(2)}s\\n\\n`;\n}\n\nmessage += `💡 *¿Necesitas más información?* Escribe otra consulta o usa /help para ver ejemplos.`;\n\n// Preparar respuesta base\nconst response = {\n  chat_id: chatId,\n  text: message,\n  parse_mode: 'Markdown'\n};\n\n// Agregar información de imágenes si están disponibles\nresponse.has_images = apiResponse.images && apiResponse.images.length > 0;\nresponse.images = apiResponse.images || [];\nresponse.api_response = apiResponse;\n\nreturn response;"
+      },
+      "id": "format-success-response",
+      "name": "Formatear Respuesta Exitosa",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1340, 460]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Manejar error de API\nconst queryData = $('Procesar Consulta').first().json;\nconst chatId = queryData.chat_id;\nconst userQuery = queryData.query;\n\n// Verificar tipo de error\nconst error = $input.first().json.error || {};\nconst isTimeout = error.code === 'ECONNABORTED' || error.message?.includes('timeout');\nconst isServerError = error.code >= 500 || error.message?.includes('Internal Server Error');\n\nlet errorMessage;\n\nif (isTimeout) {\n  errorMessage = `⏳ *Servicio iniciándose...*\\n\\nEl sistema está arrancando (cold start). Por favor, espera unos momentos y vuelve a intentarlo.\\n\\n*Tu consulta:* ${userQuery}\\n\\n💡 *Tip:* Los primeros arranques pueden tomar 30-60 segundos.`;\n} else if (isServerError) {\n  errorMessage = `🔧 *Mantenimiento temporal*\\n\\nEl sistema de consultas está en mantenimiento. Por favor, intenta nuevamente en unos minutos.\\n\\n*Tu consulta:* ${userQuery}\\n\\n📞 Si el problema persiste, contacta al administrador.`;\n} else {\n  errorMessage = `❌ *Error de conexión*\\n\\nNo pude conectarme con la base de conocimientos del manual.\\n\\n*Tu consulta:* ${userQuery}\\n\\n🔄 *Soluciones:*\\n• Verifica tu conexión\\n• Intenta de nuevo en unos momentos\\n• Usa /help para ver comandos disponibles`;\n}\n\nreturn {\n  chat_id: chatId,\n  text: errorMessage,\n  parse_mode: 'Markdown'\n};"
+      },
+      "id": "format-error-response", 
+      "name": "Formatear Error",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1340, 660]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "has-images",
+              "leftValue": "={{ $json.has_images }}",
+              "rightValue": "true",
+              "operator": {
+                "type": "boolean",
+                "operation": "equal",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "check-images",
+      "name": "Verificar Imágenes",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [1560, 460]
+    },
+    {
+      "parameters": {
+        "url": "https://api.telegram.org/bot{{ $env.TELEGRAM_BOT_TOKEN }}/sendMessage",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "chat_id",
+              "value": "={{ $json.chat_id }}"
+            },
+            {
+              "name": "text", 
+              "value": "={{ $json.text }}"
+            },
+            {
+              "name": "parse_mode",
+              "value": "={{ $json.parse_mode }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "send-text-only",
+      "name": "Enviar Solo Texto",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [1780, 380]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Enviar mensaje con imágenes\nconst input = $input.first().json;\nconst images = input.images || [];\nconst chatId = input.chat_id;\nconst textMessage = input.text;\n\n// Preparar array de respuestas\nconst responses = [];\n\n// 1. Enviar mensaje de texto principal\nresponses.push({\n  type: 'text',\n  chat_id: chatId,\n  text: textMessage,\n  parse_mode: 'Markdown'\n});\n\n// 2. Enviar hasta 3 imágenes relevantes\nconst maxImages = Math.min(images.length, 3);\nfor (let i = 0; i < maxImages; i++) {\n  const image = images[i];\n  \n  let caption = `📸 Imagen ${i + 1}/${maxImages}`;\n  if (image.description) {\n    caption += `\\n${image.description}`;\n  }\n  if (image.page) {\n    caption += `\\n📄 Página: ${image.page}`;\n  }\n  \n  responses.push({\n    type: 'photo',\n    chat_id: chatId,\n    photo: image.url,\n    caption: caption,\n    parse_mode: 'Markdown'\n  });\n}\n\nreturn responses;"
+      },
+      "id": "prepare-images",
+      "name": "Preparar Imágenes",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1780, 540]
+    },
+    {
+      "parameters": {
+        "batchSize": 1,
+        "options": {}
+      },
+      "id": "split-responses",
+      "name": "Dividir Respuestas", 
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [2000, 540]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "is-photo",
+              "leftValue": "={{ $json.type }}",
+              "rightValue": "photo",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "check-message-type",
+      "name": "Tipo de Mensaje",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [2220, 540]
+    },
+    {
+      "parameters": {
+        "url": "https://api.telegram.org/bot{{ $env.TELEGRAM_BOT_TOKEN }}/sendMessage",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "chat_id",
+              "value": "={{ $json.chat_id }}"
+            },
+            {
+              "name": "text",
+              "value": "={{ $json.text }}"
+            },
+            {
+              "name": "parse_mode",
+              "value": "={{ $json.parse_mode }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "send-text-message",
+      "name": "Enviar Texto",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [2440, 460]
+    },
+    {
+      "parameters": {
+        "url": "https://api.telegram.org/bot{{ $env.TELEGRAM_BOT_TOKEN }}/sendPhoto",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "chat_id",
+              "value": "={{ $json.chat_id }}"
+            },
+            {
+              "name": "photo",
+              "value": "={{ $json.photo }}"
+            },
+            {
+              "name": "caption",
+              "value": "={{ $json.caption }}"
+            },
+            {
+              "name": "parse_mode",
+              "value": "={{ $json.parse_mode }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "send-photo-message",
+      "name": "Enviar Foto",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [2440, 620]
+    }
+  ],
+  "connections": {
+    "Telegram Webhook": {
+      "main": [
+        [
+          {
+            "node": "Detectar Comandos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Detectar Comandos": {
+      "main": [
+        [
+          {
+            "node": "Comando Start",
+            "type": "main", 
+            "index": 0
+          },
+          {
+            "node": "Comando Help",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Comando Sections",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Procesar Consulta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Comando Start": {
+      "main": [
+        [
+          {
+            "node": "Enviar Solo Texto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Comando Help": {
+      "main": [
+        [
+          {
+            "node": "Enviar Solo Texto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Comando Sections": {
+      "main": [
+        [
+          {
+            "node": "Enviar Solo Texto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Procesar Consulta": {
+      "main": [
+        [
+          {
+            "node": "Llamada API RAG",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Llamada API RAG": {
+      "main": [
+        [
+          {
+            "node": "Verificar Respuesta API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verificar Respuesta API": {
+      "main": [
+        [
+          {
+            "node": "Formatear Respuesta Exitosa",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Formatear Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Formatear Respuesta Exitosa": {
+      "main": [
+        [
+          {
+            "node": "Verificar Imágenes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Formatear Error": {
+      "main": [
+        [
+          {
+            "node": "Enviar Solo Texto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verificar Imágenes": {
+      "main": [
+        [
+          {
+            "node": "Preparar Imágenes",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Enviar Solo Texto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preparar Imágenes": {
+      "main": [
+        [
+          {
+            "node": "Dividir Respuestas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dividir Respuestas": {
+      "main": [
+        [
+          {
+            "node": "Tipo de Mensaje",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tipo de Mensaje": {
+      "main": [
+        [
+          {
+            "node": "Enviar Foto",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Enviar Texto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [
+    {
+      "createdAt": "2025-01-01T00:00:00.000Z",
+      "updatedAt": "2025-01-01T00:00:00.000Z",
+      "id": "manual-bot",
+      "name": "Manual Bot"
+    }
+  ],
+  "triggerCount": 1,
+  "updatedAt": "2025-01-01T00:00:00.000Z",
+}
+}
