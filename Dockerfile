@@ -24,5 +24,5 @@ ENV N8N_USER_FOLDER=/home/node/.n8n
 # Crear directorio de datos
 RUN mkdir -p /home/node/.n8n
 
-# Comando de inicio directo
-CMD ["n8n", "start"]
+# Usar la ruta completa de n8n
+CMD ["/usr/local/bin/node", "/usr/local/lib/node_modules/n8n/bin/n8n", "start"]
