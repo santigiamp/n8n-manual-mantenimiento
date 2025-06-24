@@ -24,5 +24,5 @@ ENV N8N_USER_FOLDER=/home/node/.n8n
 # Crear directorio de datos
 RUN mkdir -p /home/node/.n8n
 
-# Comando de inicio con verificación
-CMD ["sh", "-c", "which n8n && n8n start"]
+# Comando de inicio directo
+CMD ["n8n", "start"]
