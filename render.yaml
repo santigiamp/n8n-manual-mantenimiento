@@ -1,0 +1,32 @@
+# ========================================
+# 2. render.yaml
+# ========================================
+
+services:
+  - type: web
+    name: n8n-manual-bot
+    env: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: N8N_HOST
+        value: 0.0.0.0
+      - key: N8N_PORT
+        sync: false
+      - key: NODE_ENV
+        value: production
+      - key: N8N_PROTOCOL
+        value: https
+      - key: WEBHOOK_URL
+        value: https://n8n-manual-bot.onrender.com
+      - key: N8N_BASIC_AUTH_ACTIVE
+        value: true
+      - key: N8N_BASIC_AUTH_USER
+        value: admin
+      - key: N8N_BASIC_AUTH_PASSWORD
+        generateValue: true
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false
+      - key: RAG_API_URL
+        value: https://manual-mantenimiento-api.onrender.com
+    healthCheckPath: /healthz
