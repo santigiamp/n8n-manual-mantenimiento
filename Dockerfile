@@ -1,13 +1,15 @@
 # ========================================
-# 1. Dockerfile
+# Dockerfile - N8N Fixed Version
 # ========================================
 
 FROM n8nio/n8n:latest
 
 USER root
 
-# Instalar dependencias adicionales si necesario
-RUN npm install -g pm2
+# Crear directorio de configuración con permisos correctos
+RUN mkdir -p /home/node/.n8n && \
+    chown -R node:node /home/node/.n8n && \
+    chmod 700 /home/node/.n8n
 
 USER node
 
@@ -16,6 +18,11 @@ ENV N8N_HOST=0.0.0.0
 ENV N8N_PORT=$PORT
 ENV NODE_ENV=production
 ENV N8N_PROTOCOL=https
+ENV N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true
+ENV N8N_USER_FOLDER=/home/node/.n8n
 
-# Comando de inicio
-CMD ["n8n", "start"]
+# Crear directorio de datos
+RUN mkdir -p /home/node/.n8n
+
+# Comando de inicio con verificación
+CMD ["sh", "-c", "which n8n && n8n start"]
